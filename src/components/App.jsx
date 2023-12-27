@@ -9,48 +9,46 @@ import { ContactForm } from './Form/ContactForm';
 import { ContactsFilter } from './Filter/Filter';
 import css from './App.module.css';
 
-import {useEffect, useState, useRef} from 'react'
+import {useEffect, useState} from 'react'
 
 export const App = () => {
   const [contacts, setContacts] = useState(()=>JSON.parse(localStorage.getItem('contacts')) ?? []);
 
   const [filter, setFilter] = useState('');
-  const idRef = useRef(null);
+ 
 
 useEffect(()=>{localStorage.setItem('contacts', JSON.stringify(contacts))},[contacts])
 
-useEffect(() => {
-  idRef.current && idRef.current.focus();
-}, []);
 
-// const createNewContact = contact =>{
-//   const contactExists = contacts.some(
-//       ({name}) => name.toLowerCase() === contact.name.toLowerCase());
-//       if (contactExists) {
-//             NotificationManager.info(`${contact.name} is already in contacts.`);
-//             return;
-//  }
-//  setContacts(prevContacts => [
-//   ...prevContacts,
-//   { id: nanoid(), ...contact },
-// ]);
-// }
 
-  const createNewContact = data => {
-    console.log(data);
-    const newContact = {
-      id: nanoid(),
-      ...data
-    };
-    const contactExists = contacts.some(
-      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
-    );
-    if (contactExists) {
-      NotificationManager.info(`${data.name} is already in contacts.`);
-      return;
-    }
-    setContacts(prevStateContacts => [newContact, ...prevStateContacts])
-  };
+const createNewContact = contact =>{
+  const contactExists = contacts.some(
+      ({name}) => name.toLowerCase() === contact.name.toLowerCase());
+      if (contactExists) {
+            NotificationManager.info(`${contact.name} is already in contacts.`);
+            return;
+ }
+ setContacts(prevContacts => [
+  ...prevContacts,
+  { id: nanoid(), ...contact },
+]);
+}
+
+  // const createNewContact = data => {
+  //   console.log(data);
+  //   const newContact = {
+  //     id: nanoid(),
+  //     ...data
+  //   };
+  //   const contactExists = contacts.some(
+  //     contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+  //   );
+  //   if (contactExists) {
+  //     NotificationManager.info(`${data.name} is already in contacts.`);
+  //     return;
+  //   }
+  //   setContacts(prevStateContacts => [newContact, ...prevStateContacts])
+  // };
 
   const deleteContact = deleteId => {
     console.log(deleteId);
