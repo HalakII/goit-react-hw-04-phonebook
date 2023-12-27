@@ -1,40 +1,46 @@
-import { Component } from 'react';
 import 'react-notifications/lib/notifications.css';
 import { NotificationContainer } from 'react-notifications';
 import { NotificationManager } from 'react-notifications';
 import { nanoid } from 'nanoid';
 import { ContactsList } from './ContactsList/ContactsList';
-// import contactNumbers from '../data/contacts.json';
 import { SectionTitle } from './SectionTitle/SectionTitle';
 import { SectionSubtitle } from './SectionSubtitle/SectionSubtitle';
 import { ContactForm } from './Form/ContactForm';
 import { ContactsFilter } from './Filter/Filter';
 import css from './App.module.css';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+import {useEffect, useState, useRef} from 'react'
 
-  componentDidMount() {
-    const newContact = localStorage.getItem('contacts');
-    const parseContacts = JSON.parse(newContact);
-    if (parseContacts) {
-      this.setState({ contacts: parseContacts });
-    }
-  }
+export const App = () => {
+  const [contacts, setContacts] = useState(()=>JSON.parse(localStorage.getItem('contacts')) ?? []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts)
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-  }
+  const [filter, setFilter] = useState('');
+  const idRef = useRef(null);
 
-  createNewContact = data => {
-    const { contacts } = this.state;
+useEffect(()=>{localStorage.setItem('contacts', JSON.stringify(contacts))},[contacts])
+
+useEffect(() => {
+  idRef.current && idRef.current.focus();
+}, []);
+
+// const createNewContact = contact =>{
+//   const contactExists = contacts.some(
+//       ({name}) => name.toLowerCase() === contact.name.toLowerCase());
+//       if (contactExists) {
+//             NotificationManager.info(`${contact.name} is already in contacts.`);
+//             return;
+//  }
+//  setContacts(prevContacts => [
+//   ...prevContacts,
+//   { id: nanoid(), ...contact },
+// ]);
+// }
+
+  const createNewContact = data => {
+    console.log(data);
     const newContact = {
-      ...data,
       id: nanoid(),
+      ...data
     };
     const contactExists = contacts.some(
       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
@@ -43,51 +49,42 @@ export class App extends Component {
       NotificationManager.info(`${data.name} is already in contacts.`);
       return;
     }
-    this.setState(prevState => {
-      return {
-        contacts: [newContact, ...prevState.contacts],
-      };
-    });
+    setContacts(prevStateContacts => [newContact, ...prevStateContacts])
   };
 
-  deleteContact = deleteId => {
-    this.setState(prevState => {
-      return {
-        contacts: prevState.contacts.filter(contact => contact.id !== deleteId),
-      };
-    });
+  const deleteContact = deleteId => {
+    console.log(deleteId);
+    setContacts(prevStateContacts => prevStateContacts.filter(contact => contact.id !== deleteId)
+    )
   };
 
-  handleChangeFilter = event => {
+
+  const handleChangeFilter = event => {
     const value = event.currentTarget.value.toLowerCase();
-    this.setState({ filter: value });
+    setFilter(value);
   };
 
-  filterContacts = () => {
-    const { contacts, filter } = this.state;
+  const filterContacts = () => {
     const normalizedFilter = filter.toLowerCase();
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
-
-  render() {
-    const filteredContacts = this.filterContacts();
-    return (
-      <div className={css.wrapper}>
-        <NotificationContainer />
-        <SectionTitle title="Phonebook" />
-        <ContactForm onSubmit={this.createNewContact} />
-        <SectionSubtitle subtitle="Contacts" />
-        <ContactsFilter
-          value={this.state.filter}
-          onFilterChange={this.handleChangeFilter}
-        />
-        <ContactsList
-          filteredContacts={filteredContacts}
-          onDeleteContact={this.deleteContact}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className={css.wrapper}>
+    <NotificationContainer />
+    <SectionTitle title="Phonebook" />
+    <ContactForm onSubmit={createNewContact} />
+    <SectionSubtitle subtitle="Contacts" />
+    <ContactsFilter
+      value={filter}
+      onFilterChange={handleChangeFilter}
+    />
+    <ContactsList
+      filteredContacts={filterContacts()}
+      onDeleteContact={deleteContact}
+    />
+  </div>
+  )
 }
+
