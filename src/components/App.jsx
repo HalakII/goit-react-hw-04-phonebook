@@ -13,7 +13,6 @@ import {useEffect, useState} from 'react'
 
 export const App = () => {
   const [contacts, setContacts] = useState(()=>JSON.parse(localStorage.getItem('contacts')) ?? []);
-
   const [filter, setFilter] = useState('');
  
 
@@ -58,6 +57,7 @@ const createNewContact = contact =>{
 
 
   const handleChangeFilter = event => {
+    console.log(event);
     const value = event.currentTarget.value.toLowerCase();
     setFilter(value);
   };
