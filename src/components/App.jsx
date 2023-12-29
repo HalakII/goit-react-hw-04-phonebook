@@ -18,36 +18,21 @@ export const App = () => {
 
 useEffect(()=>{localStorage.setItem('contacts', JSON.stringify(contacts))},[contacts])
 
-
-
-const createNewContact = contact =>{
-  const contactExists = contacts.some(
-      ({name}) => name.toLowerCase() === contact.name.toLowerCase());
-      if (contactExists) {
-            NotificationManager.info(`${contact.name} is already in contacts.`);
-            return;
- }
- setContacts(prevContacts => [
-  ...prevContacts,
-  { id: nanoid(), ...contact },
-]);
-}
-
-  // const createNewContact = data => {
-  //   console.log(data);
-  //   const newContact = {
-  //     id: nanoid(),
-  //     ...data
-  //   };
-  //   const contactExists = contacts.some(
-  //     contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
-  //   );
-  //   if (contactExists) {
-  //     NotificationManager.info(`${data.name} is already in contacts.`);
-  //     return;
-  //   }
-  //   setContacts(prevStateContacts => [newContact, ...prevStateContacts])
-  // };
+  const createNewContact = data => {
+    console.log(data);
+    const newContact = {
+      id: nanoid(),
+      ...data
+    };
+    const contactExists = contacts.some(
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+    );
+    if (contactExists) {
+      NotificationManager.info(`${data.name} is already in contacts.`);
+      return;
+    }
+    setContacts(prevStateContacts => [newContact, ...prevStateContacts])
+  };
 
   const deleteContact = deleteId => {
     console.log(deleteId);
